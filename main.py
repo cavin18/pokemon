@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 from config import token
-from logic import Pokemon
-
+from logic import Pokemon, Wizard, Fighter 
+import random 
 # Setting up intents for the bot
 intents = discord.Intents.default()  # Getting the default settings
 intents.messages = True              # Allowing the bot to process messages
@@ -23,7 +23,13 @@ async def go(ctx):
     author = ctx.author.name  # Getting the name of the message's author
     # Check whether the user already has a Pokémon. If not, then...
     if author not in Pokemon.pokemons.keys():
-        pokemon = Pokemon(author)  # Creating a new Pokémon
+        chance = random.randint(1,3)
+        if chance == 1:
+            pokemon = Pokemon(author)  # Creating a new Pokémon
+        elif chance == 2:
+            pokemon = Wizard(author)
+        elif chance == 3:
+            pokemon = Fighter(author)
         await ctx.send(await pokemon.info())  # Sending information about the Pokémon
         image_url = await pokemon.show_img()  # Getting the URL of the Pokémon image
         if image_url:
@@ -34,5 +40,30 @@ async def go(ctx):
             await ctx.send("Failed to upload an image of the pokémon.")
     else:
         await ctx.send("You've already created your own Pokémon.")  # A message that is printed whether a Pokémon has already been created
+
+
+@bot.command()
+async def attack(ctx):
+    target = ctx.message.mentions[0] if ctx.message.mentions else None
+    if target:
+        if target.name in Pokemon.pokemons and ctx.author.name in Pokemon.pokemons:
+            enemy = Pokemon.pokemons[target.name]
+            attacker = Pokemon.pokemons[ctx.author.name]
+            result = await attacker.attack(enemy)
+            await ctx.send(result)
+        else:
+            await ctx.send("Kedua pemain harus memiliki Pokémon untuk pertarungan!")
+    else:
+        await ctx.send("Tetapkan pemain yang ingin Anda serang dengan menyebutnya.")
+
+@bot.command()
+async def info(ctx):
+    author = ctx.author.name
+    if author in Pokemon.pokemons:
+        pokemon = Pokemon.pokemons[author]
+        await ctx.send(await pokemon.info())
+    else:
+        await ctx.send("Anda tidak memiliki Pokémon!")
+
 # Running the bot
 bot.run(token)
