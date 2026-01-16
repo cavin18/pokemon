@@ -1,5 +1,6 @@
 import aiohttp  # A library for asynchronous HTTP requests
 from random import randint
+from datetime import datetime, timedelta
 
 class Pokemon:
     pokemons = {}
@@ -11,6 +12,7 @@ class Pokemon:
         self.img = None
         self.power = randint(30, 60)
         self.hp = randint(200, 400)
+        self.last_feed_time = datetime.now()
         if pokemon_trainer not in Pokemon.pokemons:
             Pokemon.pokemons[pokemon_trainer] = self
         else:
@@ -58,15 +60,28 @@ class Pokemon:
         else:
             enemy.hp = 0
             return f"@{self.pokemon_trainer} menang melawan @{enemy.pokemon_trainer}!"
+        
+    async def feed(self, feed_interval = 20, hp_increase = 10 ):
+        current_time = datetime.now()  
+        delta_time = timedelta(seconds=feed_interval)  
+        if (current_time - self.last_feed_time) > delta_time:
+            self.hp += hp_increase
+            self.last_feed_time = current_time
+            return f"Kesehatan Pokemon dipulihkan. HP saat ini: {self.hp}"
+        else:
+            return f"Kalian dapat memberi makan Pokémon kalian di: {current_time+delta_time}"
             
 class Wizard(Pokemon):
-    # Kelas ini dapat menambahkan method dan properti khusus untuk penyihir
-    pass
+    async def feed(self):
+        return super().feed(hp_increase=20)
 
 class Fighter(Pokemon):
     async def attack(self, enemy):
         super_power = randint(5, 15)
-        self.power += super_power
+        self.power += super_power   
         result = await super().attack(enemy)
         self.power -= super_power
         return result + f"\nPetarung menggunakan serangan super dengan kekuatan:{super_power}"
+    
+    async def feed(self):
+        return super().feed(feed_interval=10, hp_increase=50)
