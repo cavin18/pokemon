@@ -1,1 +1,1 @@
-untuk membuat bot pokemon discord
+bot pokemon discord
