@@ -1,0 +1,21 @@
+-- database: ./movie.db
+
+
+CREATE TABLE movie(title, year, score);
+
+
+INSERT INTO movie VALUES
+('The Dark Knight', 2008, 9.0),
+('Spiderman: Far From Home', 2019, 7.5),
+('Avengers: Endgame', 2019, 8.4),
+('The LEGO Ninjago Movie', 2017, 6.1),
+('Demon Slayer: Mugen Train', 2020, 8.2),
+('Spiderman: Homecoming', 2017, 7.4),
+('Kimetsu no Yaiba Infinity Castle', 2025, 8.4),
+('Interstellar', 2014, 8.6);
+
+SELECT * FROM movie
+WHERE year > 2018
+ORDER BY score DESC;
+
+-- tadi udh pake drop buat ngehapus tabel movie
